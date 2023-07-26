@@ -22,6 +22,7 @@
         "vlucas/phpdotenv": "^5.5"
     },
     "scripts": {
-        "dev": "php -S www.dev-server.com:10000 -t public"
+        "dev": "php -S www.dev-server.com:10000 -t public",
+        "clear-templates": "rm -rf templates/.cache/*"
     }
 }

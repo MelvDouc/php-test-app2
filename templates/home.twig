@@ -3,12 +3,19 @@
 {% block title %}Home{% endblock %}
 
 {% block main %}
-  <h1>Home</h1>
-
   <ul>
-  {% for person in persons %}
+  {% for p in persons %}
     <li>
-      <a href="/profile/{{ person.id }}">{{ person.id }}</a>
+      <div>
+        <p>
+          <a href="/profile/{{ p.id }}">{{ p.firstName }} {{ p.lastName|upper }}</a>
+        </p>
+        <address>
+          <p>{{ p.address }}</p>
+          <p>{{ p.city.zipCode }} {{ p.city.name }}</p>
+          <p>{{ p.city.country }}</p>
+        </address>
+      </div>
     </li>
   {% endfor %}
   </ul>

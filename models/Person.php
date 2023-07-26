@@ -7,6 +7,7 @@ class Person
   public static function map(array $entity): Person
   {
     $person = new self();
+    $person->id = $entity["id"];
     $person->firstName = $entity["firstName"];
     $person->lastName = $entity["lastName"];
     $person->address = $entity["address"];
@@ -19,6 +20,7 @@ class Person
     return $person;
   }
 
+  public int $id;
   public string $firstName;
   public string $lastName;
   public string $address;

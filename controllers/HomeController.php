@@ -7,13 +7,19 @@ use Melv\Test\Response;
 use Melv\Test\Application;
 use Melv\Test\Model\Person;
 
+$selectPersonSql = file_get_contents(dirname(__DIR__) . "/models/sql/select-person.sql");
+
 function home(Request $req, Response $res)
 {
+  global $selectPersonSql;
   $persons = Application::$instance
     ->getDatabase()
     ->connection
-    ->query("SELECT * FROM person");
-  $res->render("home.twig", ["persons" => $persons]);
+    ->query($selectPersonSql);
+  $persons = array_map(fn ($p) => Person::map($p), $persons->fetchAll());
+  $res->render("home.twig", [
+    "persons" => $persons
+  ]);
 }
 
 function about(Request $req, Response $res)
@@ -23,31 +29,20 @@ function about(Request $req, Response $res)
 
 function person(Request $req, Response $res): void
 {
-  $id = (int) $req->urlParams["id"];
+  global $selectPersonSql;
   $statement = Application::$instance
     ->getDatabase()
     ->connection
-    ->prepare("
-      SELECT
-        firstName,
-        lastName,
-        address,
-        c.name city_name,
-        c.zipCode city_zipCode,
-        c.country city_country,
-        isMale
-      FROM person p
-        JOIN city c ON c.id = p.cityId
-      WHERE p.id = :id
-      LIMIT 1
-    ");
+    ->prepare($selectPersonSql . " WHERE p.id = :id");
 
-  if (!$statement->execute(["id" => $id])) {
+  if (
+    !$statement->execute(["id" => (int) $req->urlParams["id"]])
+    || !($person = $statement->fetch())
+  ) {
     $res->setStatusCode(404)->json(null);
     return;
   }
 
-  $person = $statement->fetch();
   $res->json(Person::map($person));
 }
 
