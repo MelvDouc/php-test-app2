@@ -2,11 +2,10 @@
 
 namespace Melv\Test\Controller;
 
-use Melv\Test\Application;
 use Melv\Test\Request;
 use Melv\Test\Response;
-
-require_once dirname(__DIR__) . "/models/Person.php";
+use Melv\Test\Application;
+use Melv\Test\Model\Person;
 
 function home(Request $req, Response $res)
 {
@@ -49,7 +48,7 @@ function person(Request $req, Response $res): void
   }
 
   $person = $statement->fetch();
-  $res->json(\Melv\Test\Model\Person::map($person));
+  $res->json(Person::map($person));
 }
 
 function _404(Request $req, Response $res)
