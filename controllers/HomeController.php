@@ -15,7 +15,7 @@ function home(Request $req, Response $res)
   $persons = Application::$instance
     ->getDatabase()
     ->connection
-    ->query($selectPersonSql);
+    ->query("$selectPersonSql ORDER BY id");
   $persons = array_map(fn ($p) => Person::map($p), $persons->fetchAll());
   $res->render("home.twig", [
     "persons" => $persons
@@ -33,7 +33,7 @@ function person(Request $req, Response $res): void
   $statement = Application::$instance
     ->getDatabase()
     ->connection
-    ->prepare($selectPersonSql . " WHERE p.id = :id");
+    ->prepare("$selectPersonSql WHERE p.id = :id");
 
   if (
     !$statement->execute(["id" => (int) $req->urlParams["id"]])
