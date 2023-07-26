@@ -1,0 +1,27 @@
+{
+    "name": "melv/test",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Melv\\Test\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MelvDouc",
+            "email": "melv.douc@gmaiL.com"
+        }
+    ],
+    "config": {
+        "process-timeout": 0
+    },
+    "require": {
+        "twig/twig": "^3.6"
+    },
+    "require-dev": {
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "scripts": {
+        "dev": "php -S www.dev-server.com:10000 -t public"
+    }
+}
