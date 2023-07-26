@@ -1,15 +1,17 @@
 <?php
 
-use Dotenv\Dotenv;
 use Melv\Test\Application;
 use Melv\Test\Database;
 use Melv\Test\Router;
+use Melv\Test\Controller;
 
 require_once __DIR__ . "/vendor/autoload.php";
 require_once __DIR__ . "/controllers/HomeController.php";
 
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+try {
+  \Dotenv\Dotenv::createImmutable(__DIR__)->load();
+} catch (\Throwable $e) {
+}
 
 $app = new Application(__DIR__);
 $app->setDatabase(
@@ -17,9 +19,9 @@ $app->setDatabase(
 );
 
 $router = new Router();
-$router->get("/", \Melv\Test\Controller\home::class);
-$router->get("/about", \Melv\Test\Controller\about::class);
-$router->get("/profile/:id", \Melv\Test\Controller\profile::class);
-$router->get("/(.*)", \Melv\Test\Controller\_404::class);
+$router->get("/", Controller\home::class);
+$router->get("/about", Controller\about::class);
+$router->get("/profile/:id", Controller\person::class);
+$router->get("/(.*)", Controller\_404::class);
 
 $app->useRouter($router);
