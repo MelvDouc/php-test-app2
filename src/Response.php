@@ -2,23 +2,32 @@
 
 namespace Melv\Test;
 
+use Twig\Environment as TwigEnvironment;
+use Twig\Loader\FilesystemLoader as TwigFileSystemLoader;
+use Twig\TwigFunction as TwigFunction;
+
 class Response
 {
-  private readonly \Twig\Environment $twig;
-  private int $statusCode = 200;
+  protected static TwigEnvironment $twig;
+
+  protected int $statusCode = 200;
 
   public function __construct()
   {
-    $templatesDir = Application::$instance->rootDir . "/templates";
-    $loader = new \Twig\Loader\FilesystemLoader($templatesDir);
-    $assetsFn = new \Twig\TwigFunction("assets", fn ($arg) => "/assets/$arg");
-
-    $this->twig = new \Twig\Environment($loader, [
-      "cache" => $templatesDir . "/.cache"
-    ]);
-    $this->twig->addFunction($assetsFn);
+    if (!isset(self::$twig)) {
+      $templatesDir = Application::$instance->rootDir . "/templates";
+      $loader = new TwigFileSystemLoader($templatesDir);
+      $assetsFn = new TwigFunction("assets", fn ($arg) => "/assets/$arg");
+      self::$twig = new TwigEnvironment($loader, [
+        "cache" => $templatesDir . "/.cache"
+      ]);
+      self::$twig->addFunction($assetsFn);
+    }
   }
 
+  /**
+   * Defaults to 200.
+   */
   public function getStatusCode(): int
   {
     return $this->statusCode;
@@ -30,6 +39,9 @@ class Response
     return $this;
   }
 
+  /**
+   * @param mixed $data Must be serializable.
+   */
   public function json(mixed $data): void
   {
     http_response_code($this->statusCode);
@@ -45,7 +57,7 @@ class Response
   public function render(string $template, array $context = []): void
   {
     http_response_code($this->statusCode);
-    echo $this->twig->render($template, $context);
+    echo self::$twig->render($template, $context);
   }
 
   public function write(string $message): void
