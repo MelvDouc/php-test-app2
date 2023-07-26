@@ -9,14 +9,13 @@ class Application
   public static Application $instance;
 
   public readonly string $rootDir;
-  private readonly Router $router;
+  private $routers = [];
   private Database $database;
 
-  public function __construct(string $rootDir, Router $router)
+  public function __construct(string $rootDir)
   {
     static::$instance = $this;
     $this->rootDir = $rootDir;
-    $this->router = $router;
   }
 
   public function getDatabase(): Database
@@ -30,24 +29,34 @@ class Application
     return $this;
   }
 
+  public function useRouter(Router $router): Application
+  {
+    $this->routers[] = $router;
+    return $this;
+  }
+
   public function run(): void
   {
     try {
       $method = $_SERVER["REQUEST_METHOD"];
       $url = $_SERVER["REQUEST_URI"];
-      $handler = $this->router->findHandler($method, $url);
 
-      if (!$handler)
-        throw new PageNotFoundException();
+      foreach ($this->routers as $router) {
+        $handler = $router->findHandler($method, $url);
 
-      call_user_func_array($handler[0], [
-        new Request($method, $url, $_GET, $handler[1], $this->getBody($method)),
-        new Response()
-      ]);
+        if ($handler) {
+          call_user_func_array($handler[0], [
+            new Request($method, $url, $_GET, $handler[1], $this->getBody($method)),
+            new Response()
+          ]);
+          return;
+        }
+      }
+
+      throw new PageNotFoundException();
     } catch (\Exception $e) {
       if ($e instanceof PageNotFoundException) {
         echo $e->getMessage();
-        exit;
       }
     }
   }
