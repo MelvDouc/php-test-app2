@@ -24,9 +24,14 @@ class HomeController extends Controller
       ->getDatabase()
       ->connection
       ->query($this->getSelectPersonSql() . " ORDER BY id");
-    $persons = array_map(fn ($p) => Person::map($p), $persons->fetchAll());
+
+    if (!$persons) {
+      $res->setStatusCode(500)->write("<h1>An error occurred.</h1>");
+      return;
+    }
+
     $res->render("home.twig", [
-      "persons" => $persons
+      "persons" => array_map("Melv\\Test\\Model\\Person::map", $persons->fetchAll())
     ]);
   }
 

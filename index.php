@@ -5,7 +5,6 @@ use Melv\Test\Application;
 
 /** @var \Composer\Autoload\ClassLoader */
 $autoLoader = require __DIR__ . "/vendor/autoload.php";
-
 $autoLoader->addPsr4("Melv\\Test\\Controller\\", __DIR__ . "/controllers");
 $autoLoader->addPsr4("Melv\\Test\\Model\\", __DIR__ . "/models");
 
@@ -18,4 +17,4 @@ try {
   exit;
 }
 
-$app = new Application(__DIR__);
+Application::create(__DIR__);

@@ -8,6 +8,11 @@ class Application
 {
   public static Application $instance;
 
+  public static function create(string $rootDir): static
+  {
+    return new static($rootDir);
+  }
+
   public readonly string $rootDir;
   private $routers = [];
   private Database $database;
@@ -55,9 +60,10 @@ class Application
 
       throw new PageNotFoundException();
     } catch (\Exception $e) {
-      if ($e instanceof PageNotFoundException) {
-        echo $e->getMessage();
-      }
+      echo "<pre>";
+      var_dump($e->getMessage());
+      echo "</pre>";
+      exit;
     }
   }
 

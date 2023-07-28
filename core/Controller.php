@@ -2,7 +2,7 @@
 
 namespace Melv\Test;
 
-class Controller
+abstract class Controller
 {
   protected static self $instance;
 
