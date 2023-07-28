@@ -7,6 +7,7 @@ use Melv\Test\Controller;
 use Melv\Test\Request;
 use Melv\Test\Response;
 use Melv\Test\Model\Person;
+use PDO;
 
 class HomeController extends Controller
 {
@@ -30,7 +31,10 @@ class HomeController extends Controller
     $cities = $cityStatement->fetchAll();
 
     $res->render("home.twig", [
-      "persons" => array_map(fn ($p) => Person::map($p, $cities[$p["cityId"] - 1]), $persons)
+      "persons" => array_map(
+        fn ($p) => Person::map($p, $cities[$p["cityId"] - 1]),
+        $persons
+      )
     ]);
   }
 
@@ -57,9 +61,9 @@ class HomeController extends Controller
     $cityStatement = Application::$instance
       ->getDatabase()
       ->connection
-      ->prepare("SELECT * FROM city WHERE id = :id");
+      ->prepare("SELECT * FROM city WHERE id = :id LIMIT 1");
     $cityStatement->execute(["id" => $person["cityId"]]);
-    $city = $cityStatement->fetch();
+    $city = $cityStatement->fetch(PDO::FETCH_ASSOC);
 
     $res->json(Person::map($person, $city));
   }
