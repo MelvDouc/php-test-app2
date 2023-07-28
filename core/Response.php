@@ -3,6 +3,7 @@
 namespace Melv\Test;
 
 use Melv\Test\Service\TemplateService;
+use Melv\Test\Service\TwigTemplateService;
 
 class Response
 {
@@ -12,7 +13,7 @@ class Response
 
   public function __construct()
   {
-    self::$templateService ??= new TemplateService();
+    self::$templateService ??= new TwigTemplateService();
   }
 
   /**
@@ -47,9 +48,7 @@ class Response
   public function render(string $template, array $context = []): void
   {
     http_response_code($this->statusCode);
-    echo self::$templateService
-      ->getEnv()
-      ->render($template, $context);
+    echo self::$templateService->render($template, $context);
   }
 
   public function write(string $message): void
