@@ -2,51 +2,59 @@
 
 namespace Melv\Test\Controller;
 
+use Melv\Test\Application;
+use Melv\Test\Controller;
 use Melv\Test\Request;
 use Melv\Test\Response;
-use Melv\Test\Application;
 use Melv\Test\Model\Person;
 
-$selectPersonSql = file_get_contents(dirname(__DIR__) . "/models/sql/select-person.sql");
-
-function home(Request $req, Response $res)
+class HomeController extends Controller
 {
-  global $selectPersonSql;
-  $persons = Application::$instance
-    ->getDatabase()
-    ->connection
-    ->query("$selectPersonSql ORDER BY id");
-  $persons = array_map(fn ($p) => Person::map($p), $persons->fetchAll());
-  $res->render("home.twig", [
-    "persons" => $persons
-  ]);
-}
+  private string $_selectPersonSql;
 
-function about(Request $req, Response $res)
-{
-  $res->render("about.twig");
-}
-
-function person(Request $req, Response $res): void
-{
-  global $selectPersonSql;
-  $statement = Application::$instance
-    ->getDatabase()
-    ->connection
-    ->prepare("$selectPersonSql WHERE p.id = :id");
-
-  if (
-    !$statement->execute(["id" => (int) $req->urlParams["id"]])
-    || !($person = $statement->fetch())
-  ) {
-    $res->setStatusCode(404)->json(null);
-    return;
+  private function getSelectPersonSql(): string
+  {
+    $this->_selectPersonSql ??= file_get_contents(Application::$instance->rootDir . "/models/sql/select-person.sql");
+    return $this->_selectPersonSql;
   }
 
-  $res->json(Person::map($person));
-}
+  public function home(Request $req, Response $res)
+  {
+    $persons = Application::$instance
+      ->getDatabase()
+      ->connection
+      ->query($this->getSelectPersonSql() . " ORDER BY id");
+    $persons = array_map(fn ($p) => Person::map($p), $persons->fetchAll());
+    $res->render("home.twig", [
+      "persons" => $persons
+    ]);
+  }
 
-function _404(Request $req, Response $res)
-{
-  $res->setStatusCode(404)->render("404.twig");
+  public function about(Request $req, Response $res)
+  {
+    $res->render("about.twig");
+  }
+
+  public function person(Request $req, Response $res): void
+  {
+    $statement = Application::$instance
+      ->getDatabase()
+      ->connection
+      ->prepare($this->getSelectPersonSql() . " WHERE p.id = :id");
+
+    if (
+      !$statement->execute(["id" => (int) $req->urlParams["id"]])
+      || !($person = $statement->fetch())
+    ) {
+      $res->setStatusCode(404)->json(null);
+      return;
+    }
+
+    $res->json(Person::map($person));
+  }
+
+  public function _404(Request $req, Response $res)
+  {
+    $res->setStatusCode(404)->render("404.twig");
+  }
 }

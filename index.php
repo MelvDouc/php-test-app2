@@ -3,9 +3,11 @@
 use Dotenv\Dotenv;
 use Melv\Test\Application;
 
-require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/controllers/HomeController.php";
-require_once __DIR__ . "/models/Person.php";
+/** @var \Composer\Autoload\ClassLoader */
+$autoLoader = require __DIR__ . "/vendor/autoload.php";
+
+$autoLoader->addPsr4("Melv\\Test\\Controller\\", __DIR__ . "/controllers");
+$autoLoader->addPsr4("Melv\\Test\\Model\\", __DIR__ . "/models");
 
 try {
   Dotenv::createImmutable(__DIR__)->load();

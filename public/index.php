@@ -3,7 +3,7 @@
 use Melv\Test\Router;
 use Melv\Test\Database;
 use Melv\Test\Application;
-use Melv\Test\Controller;
+use Melv\Test\Controller\HomeController;
 
 require_once dirname(__DIR__) . "/index.php";
 
@@ -12,10 +12,11 @@ Application::$instance->setDatabase(
 );
 
 $router = new Router();
-$router->get("/", Controller\home::class);
-$router->get("/about", Controller\about::class);
-$router->get("/profile/:id", Controller\person::class);
-$router->get("/(.*)", Controller\_404::class);
+
+$router->get("/", [HomeController::getInstance(), "home"]);
+$router->get("/about", [HomeController::getInstance(), "about"]);
+$router->get("/profile/:id", [HomeController::getInstance(), "person"]);
+$router->get("/(.*)", [HomeController::getInstance(), "_404"]);
 
 Application::$instance->useRouter($router);
 Application::$instance->run();
