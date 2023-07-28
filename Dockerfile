@@ -3,6 +3,7 @@ FROM php:8.2-apache
 
 # Add or modify the DirectoryIndex directive to include index.php
 RUN echo "DirectoryIndex index.php index.html" >> /etc/apache2/apache2.conf
+RUN a2enmod rewrite
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
