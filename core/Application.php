@@ -2,6 +2,7 @@
 
 namespace Melv\Test;
 
+use Dotenv\Dotenv;
 use Melv\Test\Exception\PageNotFoundException;
 
 class Application
@@ -37,6 +38,16 @@ class Application
   public function getPhpEnv(): ?string
   {
     return $_ENV["PHP_ENV"] ?? null;
+  }
+
+  public function loadEnv(): void
+  {
+    try {
+      if ($this->getPhpEnv() === null)
+        Dotenv::createImmutable($this->rootDir)->load();
+    } catch (\Throwable $e) {
+      $this->handleError($e);
+    }
   }
 
   public function useRouter(Router $router): Application
