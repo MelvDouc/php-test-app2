@@ -65,11 +65,28 @@ class Application
 
       throw new PageNotFoundException();
     } catch (\Exception $e) {
-      echo "<pre style=\"color: red; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
-      var_dump($e->getMessage());
-      echo "</pre>";
-      exit;
+      Application::$instance->handleError($e);
     }
+  }
+
+  public function handleError(\Throwable $e, string $color = "red")
+  {
+    echo "<pre style=\"color: $color; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
+    var_dump($e->getMessage());
+    echo "</pre>";
+    exit;
+    // $env = $this->getPhpEnv();
+    // mail(
+    //   "melv.douc@gmail.com",
+    //   "Error ($env)",
+    //   $e->getMessage(),
+    //   [
+    //     "From" => "melv.douc@gmail.com",
+    //     "Content-Type" => "text/plain; charset=utf-8",
+    //     "X-Mailer" => "PHP/" . phpversion(),
+    //   ]
+    // );
+    // exit("An error occurred.");
   }
 
   protected function getBody(string $method)

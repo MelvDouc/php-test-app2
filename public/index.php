@@ -13,20 +13,16 @@ $autoLoader = require $ROOT_DIR . "/vendor/autoload.php";
 $autoLoader->addPsr4("Melv\\Test\\Controller\\", $ROOT_DIR . "/controllers");
 $autoLoader->addPsr4("Melv\\Test\\Model\\", $ROOT_DIR . "/models");
 
+Application::create($ROOT_DIR);
+
 try {
   $env = $_ENV["PHP_ENV"] ?? null;
   if ($env === null)
     Dotenv::createImmutable($ROOT_DIR)->load();
 } catch (\Throwable $e) {
-  if ($env === "development") {
-    echo "<pre style=\"color: green; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
-    var_dump($e->getMessage());
-    echo "</pre>";
-  }
-  exit;
+  Application::$instance->handleError($e);
 }
 
-Application::create($ROOT_DIR);
 Application::$instance->setDatabase(
   new Database($_ENV["DB_DSN"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"])
 );
