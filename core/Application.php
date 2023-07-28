@@ -75,18 +75,6 @@ class Application
     var_dump($e->getMessage());
     echo "</pre>";
     exit;
-    // $env = $this->getPhpEnv();
-    // mail(
-    //   "melv.douc@gmail.com",
-    //   "Error ($env)",
-    //   $e->getMessage(),
-    //   [
-    //     "From" => "melv.douc@gmail.com",
-    //     "Content-Type" => "text/plain; charset=utf-8",
-    //     "X-Mailer" => "PHP/" . phpversion(),
-    //   ]
-    // );
-    // exit("An error occurred.");
   }
 
   protected function getBody(string $method)

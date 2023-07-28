@@ -2,29 +2,17 @@
 
 namespace Melv\Test;
 
-use Twig\Environment as TwigEnvironment;
-use Twig\Loader\FilesystemLoader as TwigFileSystemLoader;
-use Twig\TwigFunction as TwigFunction;
+use Melv\Test\Service\TemplateService;
 
 class Response
 {
-  protected static TwigEnvironment $twig;
+  protected static TemplateService $templateService;
 
   protected int $statusCode = 200;
 
   public function __construct()
   {
-    if (!isset(self::$twig)) {
-      $templatesDir = Application::$instance->rootDir . "/templates";
-      $loader = new TwigFileSystemLoader($templatesDir);
-      $options = [];
-      if (Application::$instance->getPhpEnv() === "production")
-        $options["cache"] = "$templatesDir/.cache";
-      self::$twig = new TwigEnvironment($loader, $options);
-      self::$twig->addFunction(
-        new TwigFunction("assets", fn ($arg) => "/assets/$arg")
-      );
-    }
+    self::$templateService ??= new TemplateService();
   }
 
   /**
@@ -59,7 +47,9 @@ class Response
   public function render(string $template, array $context = []): void
   {
     http_response_code($this->statusCode);
-    echo self::$twig->render($template, $context);
+    echo self::$templateService
+      ->getEnv()
+      ->render($template, $context);
   }
 
   public function write(string $message): void

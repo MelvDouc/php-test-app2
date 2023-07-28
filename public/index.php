@@ -12,6 +12,7 @@ $ROOT_DIR = dirname(__DIR__);
 $autoLoader = require $ROOT_DIR . "/vendor/autoload.php";
 $autoLoader->addPsr4("Melv\\Test\\Controller\\", $ROOT_DIR . "/controllers");
 $autoLoader->addPsr4("Melv\\Test\\Model\\", $ROOT_DIR . "/models");
+$autoLoader->addPsr4("Melv\\Test\\Service\\", $ROOT_DIR . "/services");
 
 Application::create($ROOT_DIR);
 
