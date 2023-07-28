@@ -3,6 +3,7 @@
 namespace Melv\Test\Service;
 
 use Melv\Test\Application;
+use Melv\Test\Service\Interface\TemplateService;
 use Twig\Environment as TwigEnvironment;
 use Twig\Loader\FilesystemLoader as TwigFileSystemLoader;
 use Twig\TwigFunction as TwigFunction;

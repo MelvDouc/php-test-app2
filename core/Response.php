@@ -2,7 +2,7 @@
 
 namespace Melv\Test;
 
-use Melv\Test\Service\TemplateService;
+use Melv\Test\Service\Interface\TemplateService;
 use Melv\Test\Service\TwigTemplateService;
 
 class Response

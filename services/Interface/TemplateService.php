@@ -1,6 +1,6 @@
 <?php
 
-namespace Melv\Test\Service;
+namespace Melv\Test\Service\Interface;
 
 interface TemplateService
 {
