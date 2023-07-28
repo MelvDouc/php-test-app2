@@ -1,14 +1,30 @@
 <?php
 
+use Dotenv\Dotenv;
 use Melv\Test\Router;
 use Melv\Test\Database;
 use Melv\Test\Application;
 use Melv\Test\Controller\HomeController;
 
-require_once dirname(__DIR__) . "/index.php";
+$ROOT_DIR = dirname(__DIR__);
 
+/** @var \Composer\Autoload\ClassLoader */
+$autoLoader = require $ROOT_DIR . "/vendor/autoload.php";
+$autoLoader->addPsr4("Melv\\Test\\Controller\\", $ROOT_DIR . "/controllers");
+$autoLoader->addPsr4("Melv\\Test\\Model\\", $ROOT_DIR . "/models");
+
+try {
+  Dotenv::createImmutable($ROOT_DIR)->load();
+} catch (\Throwable $e) {
+  echo "<pre>";
+  var_dump($e);
+  echo "</pre>";
+  exit;
+}
+
+Application::create($ROOT_DIR);
 Application::$instance->setDatabase(
-  new Database($_ENV["DB_HOST"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"])
+  new Database($_ENV["DB_CONNECTION_URI"])
 );
 
 $router = new Router();
