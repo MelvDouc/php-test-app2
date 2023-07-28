@@ -4,6 +4,7 @@ namespace Melv\Test;
 
 use Dotenv\Dotenv;
 use Melv\Test\Exception\PageNotFoundException;
+use Melv\Test\Service\Interface\DatabaseService;
 
 class Application
 {
@@ -16,7 +17,7 @@ class Application
 
   public readonly string $rootDir;
   private $routers = [];
-  private Database $database;
+  private DatabaseService $database;
 
   public function __construct(string $rootDir)
   {
@@ -24,12 +25,12 @@ class Application
     $this->rootDir = $rootDir;
   }
 
-  public function getDatabase(): Database
+  public function getDatabase(): mixed
   {
     return $this->database;
   }
 
-  public function setDatabase(Database $database): Application
+  public function setDatabase(DatabaseService $database): Application
   {
     $this->database = $database;
     return $this;

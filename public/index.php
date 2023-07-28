@@ -1,9 +1,9 @@
 <?php
 
 use Melv\Test\Router;
-use Melv\Test\Database;
 use Melv\Test\Application;
 use Melv\Test\Controller\HomeController;
+use Melv\Test\Service\MySqlDatabaseService;
 
 $ROOT_DIR = dirname(__DIR__);
 
@@ -16,7 +16,7 @@ $autoLoader->addPsr4("Melv\\Test\\Service\\", $ROOT_DIR . "/services");
 $app = new Application($ROOT_DIR);
 $app->loadEnv();
 $app->setDatabase(
-  new Database($_ENV["DB_DSN"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"])
+  new MySqlDatabaseService($_ENV["DB_DSN"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"])
 );
 
 $router = new Router();

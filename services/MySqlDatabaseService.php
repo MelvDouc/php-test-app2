@@ -1,12 +1,15 @@
 <?php
 
-namespace Melv\Test;
+namespace Melv\Test\Service;
 
+use Melv\Test\Application;
+use Melv\Test\Service\Interface\DatabaseService;
 use PDO;
+use PDOStatement;
 
-class Database
+class MySqlDatabaseService implements DatabaseService
 {
-  public readonly PDO $connection;
+  protected readonly PDO $connection;
 
   public function __construct(string $dsn, string $dbName, string $username, string $password)
   {
@@ -24,5 +27,15 @@ class Database
     } catch (\Throwable $e) {
       Application::$instance->handleError($e);
     }
+  }
+
+  public function query(string $sql): PDOStatement|false
+  {
+    return $this->connection->query($sql);
+  }
+
+  public function prepare(string $sql): PDOStatement|false
+  {
+    return $this->connection->prepare($sql);
   }
 }

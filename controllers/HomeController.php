@@ -15,11 +15,9 @@ class HomeController extends Controller
   {
     $personStatement = Application::$instance
       ->getDatabase()
-      ->connection
       ->query("SELECT * FROM person");
     $cityStatement = Application::$instance
       ->getDatabase()
-      ->connection
       ->query("SELECT * FROM city ORDER BY id");
 
     if (!$personStatement || !$cityStatement) {
@@ -47,7 +45,6 @@ class HomeController extends Controller
   {
     $personStatement = Application::$instance
       ->getDatabase()
-      ->connection
       ->prepare("SELECT * FROM person WHERE id = :id");
 
     if (
@@ -60,7 +57,6 @@ class HomeController extends Controller
 
     $cityStatement = Application::$instance
       ->getDatabase()
-      ->connection
       ->prepare("SELECT * FROM city WHERE id = :id LIMIT 1");
     $cityStatement->execute(["id" => $person["cityId"]]);
     $city = $cityStatement->fetch(PDO::FETCH_ASSOC);
