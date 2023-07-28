@@ -4,26 +4,22 @@ namespace Melv\Test\Model;
 
 class Person
 {
-  public static function map(array $entity): Person
+  public static function map(array $p, array $city): Person
   {
     $person = new self();
-    $person->id = $entity["id"];
-    $person->firstName = $entity["firstName"];
-    $person->lastName = $entity["lastName"];
-    $person->address = $entity["address"];
-    $person->city = [
-      "name" => $entity["city_name"],
-      "zipCode" => $entity["city_zipCode"],
-      "country" => $entity["city_country"]
-    ];
-    $person->isMale = (bool) $entity["isMale"];
+    $person->id = $p["id"];
+    $person->firstName = $p["firstName"];
+    $person->lastName = $p["lastName"];
+    $person->street = $p["street"];
+    $person->city = (object) $city;
+    $person->isMale = $p["gender"] === "M";
     return $person;
   }
 
   public int $id;
   public string $firstName;
   public string $lastName;
-  public string $address;
-  public array $city;
+  public string $street;
+  public object $city;
   public bool $isMale;
 }

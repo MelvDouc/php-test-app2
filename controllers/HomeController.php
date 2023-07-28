@@ -10,28 +10,27 @@ use Melv\Test\Model\Person;
 
 class HomeController extends Controller
 {
-  private string $_selectPersonSql;
-
-  private function getSelectPersonSql(): string
-  {
-    $this->_selectPersonSql ??= file_get_contents(Application::$instance->rootDir . "/models/sql/select-person.sql");
-    return $this->_selectPersonSql;
-  }
-
   public function home(Request $req, Response $res)
   {
-    $persons = Application::$instance
+    $personStatement = Application::$instance
       ->getDatabase()
       ->connection
-      ->query($this->getSelectPersonSql() . " ORDER BY id");
+      ->query("SELECT * FROM person");
+    $cityStatement = Application::$instance
+      ->getDatabase()
+      ->connection
+      ->query("SELECT * FROM city ORDER BY id");
 
-    if (!$persons) {
+    if (!$personStatement || !$cityStatement) {
       $res->setStatusCode(500)->write("<h1>An error occurred.</h1>");
       return;
     }
 
+    $persons = $personStatement->fetchAll();
+    $cities = $cityStatement->fetchAll();
+
     $res->render("home.twig", [
-      "persons" => array_map("Melv\\Test\\Model\\Person::map", $persons->fetchAll())
+      "persons" => array_map(fn ($p) => Person::map($p, $cities[$p["cityId"] - 1]), $persons)
     ]);
   }
 
@@ -42,20 +41,27 @@ class HomeController extends Controller
 
   public function person(Request $req, Response $res): void
   {
-    $statement = Application::$instance
+    $personStatement = Application::$instance
       ->getDatabase()
       ->connection
-      ->prepare($this->getSelectPersonSql() . " WHERE p.id = :id");
+      ->prepare("SELECT * FROM person WHERE id = :id");
 
     if (
-      !$statement->execute(["id" => (int) $req->urlParams["id"]])
-      || !($person = $statement->fetch())
+      !$personStatement->execute(["id" => (int) $req->urlParams["id"]])
+      || !($person = $personStatement->fetch())
     ) {
       $res->setStatusCode(404)->json(null);
       return;
     }
 
-    $res->json(Person::map($person));
+    $cityStatement = Application::$instance
+      ->getDatabase()
+      ->connection
+      ->prepare("SELECT * FROM city WHERE id = :id");
+    $cityStatement->execute(["id" => $person["cityId"]]);
+    $city = $cityStatement->fetch();
+
+    $res->json(Person::map($person, $city));
   }
 
   public function _404(Request $req, Response $res)
