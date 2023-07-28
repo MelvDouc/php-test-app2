@@ -14,17 +14,21 @@ $autoLoader->addPsr4("Melv\\Test\\Controller\\", $ROOT_DIR . "/controllers");
 $autoLoader->addPsr4("Melv\\Test\\Model\\", $ROOT_DIR . "/models");
 
 try {
-  Dotenv::createImmutable($ROOT_DIR)->load();
+  $env = $_ENV["PHP_ENV"] ?? null;
+  if ($env === null)
+    Dotenv::createImmutable($ROOT_DIR)->load();
 } catch (\Throwable $e) {
-  echo "<pre>";
-  var_dump($e);
-  echo "</pre>";
+  if ($env === "development") {
+    echo "<pre style=\"color: green; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
+    var_dump($e->getMessage());
+    echo "</pre>";
+  }
   exit;
 }
 
 Application::create($ROOT_DIR);
 Application::$instance->setDatabase(
-  new Database($_ENV["DB_CONNECTION_URI"])
+  new Database($_ENV["DB_DSN"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"])
 );
 
 $router = new Router();

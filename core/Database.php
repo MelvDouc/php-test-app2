@@ -6,22 +6,28 @@ use PDO;
 
 class Database
 {
-  protected const CONNECTION_URI = "/^mysql:\/{2}(?P<username>\w+):(?P<password>\w+)@(?P<dsn>[\w\.]+):\d+\/(?P<dbName>\w+)/";
   public readonly PDO $connection;
 
-  public function __construct(string $connectionUri)
+  public function __construct(string $dsn, string $dbName, string $username, string $password)
   {
-    preg_match(self::CONNECTION_URI, $connectionUri, $detail);
     try {
       $this->connection = new PDO(
-        "mysql:host=$detail[dsn];dbname=$detail[dbName];charset=utf8",
-        $detail["username"],
-        $detail["password"]
+        "mysql:host=$dsn;dbname=$dbName;charset=utf8",
+        $username,
+        $password
       );
     } catch (\Throwable $e) {
-      echo "<pre style=\"font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
-      var_dump($e->getMessage());
-      echo "</pre>";
+      if (Application::$instance->getPhpEnv() === "development") {
+        echo "<pre style=\"color: blue; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
+        var_dump([
+          "dsn" => $dsn,
+          "dbName" => $dbName,
+          "username" => $username,
+          "password" => $password
+        ]);
+        var_dump($e->getMessage());
+        echo "</pre>";
+      }
       exit;
     }
   }

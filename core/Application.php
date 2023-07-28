@@ -34,6 +34,11 @@ class Application
     return $this;
   }
 
+  public function getPhpEnv(): ?string
+  {
+    return $_ENV["PHP_ENV"] ?? null;
+  }
+
   public function useRouter(Router $router): Application
   {
     $this->routers[] = $router;
@@ -60,7 +65,7 @@ class Application
 
       throw new PageNotFoundException();
     } catch (\Exception $e) {
-      echo "<pre>";
+      echo "<pre style=\"color: red; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
       var_dump($e->getMessage());
       echo "</pre>";
       exit;
