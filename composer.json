@@ -23,8 +23,6 @@
     },
     "scripts": {
         "dev": "php -S www.dev-server.com:10000 -t public",
-        "clear-templates": "rm -rf templates/.cache/*",
-        "docker:kill": "docker stop my_container && docker rm my_container",
-        "docker:restart": "composer run docker:kill && docker build -t myphptestapp2 . && docker run -d -p 10000:80 --name my_container phptestapp2"
+        "clear-templates": "rm -rf templates/.cache/*"
     }
 }
