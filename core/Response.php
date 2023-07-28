@@ -17,10 +17,7 @@ class Response
     if (!isset(self::$twig)) {
       $templatesDir = Application::$instance->rootDir . "/templates";
       $loader = new TwigFileSystemLoader($templatesDir);
-      $options = [];
-      if (isset($_ENV["PHP_ENV"]) && $_ENV["PHP_ENV"] === "production")
-        $options["cache"] = "$templatesDir/.cache";
-      self::$twig = new TwigEnvironment($loader, $options);
+      self::$twig = new TwigEnvironment($loader);
       self::$twig->addFunction(
         new TwigFunction("assets", fn ($arg) => "/assets/$arg")
       );
