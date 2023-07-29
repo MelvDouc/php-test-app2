@@ -2,7 +2,6 @@
 
 namespace Melv\Test\Controller;
 
-use Melv\Test\Application;
 use Melv\Test\Controller;
 use Melv\Test\Request;
 use Melv\Test\Response;
@@ -13,10 +12,10 @@ class HomeController extends Controller
 {
   public function home(Request $req, Response $res)
   {
-    $personStatement = Application::$instance
+    $personStatement = $req->app
       ->getDatabase()
       ->query("SELECT * FROM person");
-    $cityStatement = Application::$instance
+    $cityStatement = $req->app
       ->getDatabase()
       ->query("SELECT * FROM city ORDER BY id");
 
@@ -43,7 +42,7 @@ class HomeController extends Controller
 
   public function person(Request $req, Response $res): void
   {
-    $personStatement = Application::$instance
+    $personStatement = $req->app
       ->getDatabase()
       ->prepare("SELECT * FROM person WHERE id = :id");
 
@@ -55,7 +54,7 @@ class HomeController extends Controller
       return;
     }
 
-    $cityStatement = Application::$instance
+    $cityStatement = $req->app
       ->getDatabase()
       ->prepare("SELECT * FROM city WHERE id = :id LIMIT 1");
     $cityStatement->execute(["id" => $person["cityId"]]);

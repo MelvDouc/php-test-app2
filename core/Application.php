@@ -74,7 +74,7 @@ class Application
 
         if ($handler) {
           call_user_func_array($handler[0], [
-            new Request($method, $url, $_GET, $handler[1], $this->getBody($method)),
+            new Request($this, $method, $url, $_GET, $handler[1], $this->getBody($method)),
             new Response()
           ]);
           return;

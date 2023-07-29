@@ -8,10 +8,18 @@ class Request
   public readonly string $url;
   public readonly array $queryParams;
   public readonly array $urlParams;
+  public readonly Application $app;
   public readonly ?array $body;
 
-  public function __construct(string $method, string $url, array $queryParams, array $urlParams, ?array $body = null)
-  {
+  public function __construct(
+    Application $app,
+    string $method,
+    string $url,
+    array $queryParams,
+    array $urlParams,
+    ?array $body = null
+  ) {
+    $this->app = $app;
     $this->method = $method;
     $this->url = $url;
     $this->queryParams = $queryParams;
