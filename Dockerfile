@@ -13,12 +13,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Add or modify the DirectoryIndex directive to include index.php
 RUN echo "DirectoryIndex index.php index.html" >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite
+RUN service apache2 restart
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
 
 # Assign ownership to the new user and group
-RUN chown -R appuser1:appgroup1 /var/www/html/
+RUN chown -R appuser1:appgroup1 /var/www/html
 
 # Copy your PHP application files to the container
 COPY . /var/www/html/
