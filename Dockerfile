@@ -31,7 +31,6 @@ RUN composer install --no-dev --no-interaction
 
 # Update Apache configuration to set the document root to the "public" folder
 RUN sed -i 's/DocumentRoot\ \/var\/www\/html/DocumentRoot\ \/var\/www\/html\/public/g' /etc/apache2/sites-available/000-default.conf
-RUN service apache2 restart
 
 # Expose port 80 to the host
 EXPOSE 80
