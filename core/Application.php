@@ -83,7 +83,7 @@ class Application
 
       throw new PageNotFoundException();
     } catch (\Exception $e) {
-      Application::$instance->handleError($e);
+      $this->handleError($e);
     }
   }
 

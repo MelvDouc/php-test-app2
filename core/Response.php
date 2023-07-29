@@ -2,6 +2,7 @@
 
 namespace Melv\Test;
 
+use LDAP\Result;
 use Melv\Test\Service\Interface\TemplateService;
 
 class Response
@@ -15,6 +16,7 @@ class Response
   }
 
   protected int $statusCode = 200;
+  protected ?object $flashData = null;
 
   public function __construct()
   {
@@ -32,6 +34,19 @@ class Response
   public function setStatusCode(int $statusCode): Response
   {
     $this->statusCode = $statusCode;
+    return $this;
+  }
+
+  public function getFlashData(): ?object
+  {
+    $flashData = $this->flashData;
+    $this->flashData = null;
+    return $flashData;
+  }
+
+  public function setFlashData(?object $flashData): Response
+  {
+    $this->flashData = $flashData;
     return $this;
   }
 
