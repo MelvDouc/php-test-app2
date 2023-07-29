@@ -90,9 +90,10 @@ class Application
 
   public function handleError(\Throwable $e, string $color = "red")
   {
-    echo "<pre style=\"color: $color; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
+    echo "<div style=\"margin-inline: 1em; padding: .75em; border-radius: 5px; background: #EEE; color: $color;\">";
+    echo "<pre style=\"margin: 0; font-family: 'Fira Code', 'Ubuntu Mono', Consolas, 'Courier New', monospace;\">";
     var_dump($e->getMessage());
-    echo "</pre>";
+    echo "</pre></div>";
     exit;
   }
 
