@@ -1,6 +1,9 @@
 # Use the official PHP image as the base image
 FROM php:8.2-apache
 
+# Create a new user and group inside the container (to manipulate fs within app)
+RUN groupadd -r appgroup1 && useradd -r -g appgroup1 appuser1
+
 # Install dependencies required by Composer
 RUN apt-get update && apt-get install -y git unzip
 
@@ -13,6 +16,9 @@ RUN a2enmod rewrite
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
+
+# Assign ownership to the new user and group
+RUN chown -R appuser1:appgroup1 /var/www/html/
 
 # Copy your PHP application files to the container
 COPY . /var/www/html/

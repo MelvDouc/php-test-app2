@@ -2,7 +2,6 @@
 
 namespace Melv\Test;
 
-use LDAP\Result;
 use Melv\Test\Service\Interface\TemplateService;
 
 class Response
