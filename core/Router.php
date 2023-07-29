@@ -54,10 +54,13 @@ class Router
   {
     foreach ($this->routes[$method] as $key => $value) {
       if ($key === $path)
-        return [$value, []];
+        return ["fn" => $value];
 
       if (preg_match($key, $path, $params))
-        return [$value, $params];
+        return [
+          "fn"     => $value,
+          "params" => $params
+        ];
     }
 
     return null;

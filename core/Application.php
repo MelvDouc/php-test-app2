@@ -10,20 +10,20 @@ class Application
 {
   public static Application $instance;
 
-  public static function create(string $rootDir): static
+  public static function create(string $ROOT_DIR): static
   {
-    return new static($rootDir);
+    return new static($ROOT_DIR);
   }
 
-  public readonly string $rootDir;
+  public readonly string $ROOT_DIR;
+  /** @var Router[] $routers */
   protected $routers = [];
   protected DatabaseService $database;
-  protected array $_404Handler;
 
-  public function __construct(string $rootDir)
+  public function __construct(string $ROOT_DIR)
   {
     static::$instance = $this;
-    $this->rootDir = $rootDir;
+    $this->ROOT_DIR = $ROOT_DIR;
   }
 
   public function getDatabase(): mixed
@@ -48,17 +48,11 @@ class Application
     return $this;
   }
 
-  public function set404Handler(callable $handler): Application
-  {
-    $this->_404Handler = $handler;
-    return $this;
-  }
-
   public function loadEnv(): void
   {
     try {
       if ($this->getPhpEnv() === null)
-        Dotenv::createImmutable($this->rootDir)->load();
+        Dotenv::createImmutable(ROOT_DIR)->load();
     } catch (\Throwable $e) {
       $this->handleError($e);
     }
@@ -80,20 +74,12 @@ class Application
         $handler = $router->findHandler($method, $url);
 
         if ($handler) {
-          call_user_func_array($handler[0], [
-            new Request($this, $method, $url, $_GET, $handler[1], $this->getBody($method)),
+          call_user_func_array($handler["fn"], [
+            new Request($this, $method, $url, $_GET, $handler["params"] ?? null, $this->getBody($method)),
             new Response()
           ]);
           return;
         }
-      }
-
-      if (isset($this->_404Handler)) {
-        call_user_func_array($this->_404Handler, [
-          new Request($this, $method, $url, $_GET, [], $this->getBody($method)),
-          new Response()
-        ]);
-        return;
       }
 
       throw new PageNotFoundException();

@@ -2,7 +2,6 @@
 
 namespace Melv\Test\Service;
 
-use Melv\Test\Application;
 use Melv\Test\Service\Interface\TemplateService;
 use Twig\Environment as TwigEnvironment;
 use Twig\Loader\FilesystemLoader as TwigFileSystemLoader;
@@ -15,7 +14,7 @@ class TwigTemplateService implements TemplateService
   public function __construct()
   {
     if (!isset(self::$twig)) {
-      $templatesDir = Application::$instance->rootDir . "/templates";
+      $templatesDir = ROOT_DIR . "/templates";
       $loader = new TwigFileSystemLoader($templatesDir);
       self::$twig = new TwigEnvironment($loader);
       self::$twig->addFunction(
