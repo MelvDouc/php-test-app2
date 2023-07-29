@@ -41,6 +41,12 @@ class Application
     return $_ENV["PHP_ENV"] ?? null;
   }
 
+  public function setTemplateEngine(string $templateEngine): Application
+  {
+    Response::setTemplateServiceClassName($templateEngine);
+    return $this;
+  }
+
   public function loadEnv(): void
   {
     try {

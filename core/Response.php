@@ -3,17 +3,22 @@
 namespace Melv\Test;
 
 use Melv\Test\Service\Interface\TemplateService;
-use Melv\Test\Service\TwigTemplateService;
 
 class Response
 {
+  protected static string $templateServiceClassName;
   protected static TemplateService $templateService;
+
+  public static function setTemplateServiceClassName($name)
+  {
+    static::$templateServiceClassName = $name;
+  }
 
   protected int $statusCode = 200;
 
   public function __construct()
   {
-    self::$templateService ??= new TwigTemplateService();
+    self::$templateService ??= new (static::$templateServiceClassName)();
   }
 
   /**
