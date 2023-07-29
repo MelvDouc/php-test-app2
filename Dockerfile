@@ -13,7 +13,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Add or modify the DirectoryIndex directive to include index.php
 RUN echo "DirectoryIndex index.php index.html" >> /etc/apache2/apache2.conf
 RUN a2enmod rewrite
-RUN service apache2 restart
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
@@ -32,6 +31,7 @@ RUN composer install --no-dev --no-interaction
 
 # Update Apache configuration to set the document root to the "public" folder
 RUN sed -i 's/DocumentRoot\ \/var\/www\/html/DocumentRoot\ \/var\/www\/html\/public/g' /etc/apache2/sites-available/000-default.conf
+RUN service apache2 restart
 
 # Expose port 80 to the host
 EXPOSE 80
