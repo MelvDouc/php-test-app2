@@ -2,6 +2,7 @@
 
 use Melv\Test\Router;
 use Melv\Test\Application;
+use Melv\Test\Controller\ApiController;
 use Melv\Test\Controller\HomeController;
 use Melv\Test\Service\MySqlDatabaseService;
 use Melv\Test\Service\TwigTemplateService;
@@ -21,13 +22,16 @@ $app->setDatabase(
   new MySqlDatabaseService($_ENV["DB_DSN"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"])
 );
 
-$router = new Router();
+$clientRouter = new Router();
 $homeController = new HomeController();
+$clientRouter->get("/", [$homeController, "home"]);
+$clientRouter->get("/about", [$homeController, "about"]);
 
-$router->get("/", [$homeController, "home"]);
-$router->get("/about", [$homeController, "about"]);
-$router->get("/profile/:id", [$homeController, "person"]);
-$router->get("/(.*)", [$homeController, "_404"]);
+$apiRouter = new Router("/api/v1");
+$apiController = new ApiController();
+$apiRouter->get("/profile/:id", [$apiController, "person"]);
 
-$app->useRouter($router);
+$app->useRouter($clientRouter);
+$app->useRouter($apiRouter);
+$app->set404Handler([$homeController, "_404"]);
 $app->run();

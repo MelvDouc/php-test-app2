@@ -13,6 +13,9 @@ class Router
   ];
   protected readonly string $prefix;
 
+  /**
+   * @param string $prefix Must not end with a slash.
+   */
   public function __construct(string $prefix = "")
   {
     $this->prefix = $prefix;

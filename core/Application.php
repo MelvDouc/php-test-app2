@@ -16,8 +16,9 @@ class Application
   }
 
   public readonly string $rootDir;
-  private $routers = [];
-  private DatabaseService $database;
+  protected $routers = [];
+  protected DatabaseService $database;
+  protected array $_404Handler;
 
   public function __construct(string $rootDir)
   {
@@ -44,6 +45,12 @@ class Application
   public function setTemplateEngine(string $templateEngine): Application
   {
     Response::setTemplateServiceClassName($templateEngine);
+    return $this;
+  }
+
+  public function set404Handler(callable $handler): Application
+  {
+    $this->_404Handler = $handler;
     return $this;
   }
 
@@ -79,6 +86,14 @@ class Application
           ]);
           return;
         }
+      }
+
+      if (isset($this->_404Handler)) {
+        call_user_func_array($this->_404Handler, [
+          new Request($this, $method, $url, $_GET, [], $this->getBody($method)),
+          new Response()
+        ]);
+        return;
       }
 
       throw new PageNotFoundException();

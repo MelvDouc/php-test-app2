@@ -19,7 +19,7 @@
     {% for p in persons %}
       <tr>
         <td>
-          <a href="/profile/{{ p.id }}">{{ p.id }}</a>
+          <a href="/api/v1/profile/{{ p.id }}">{{ p.id }}</a>
         </td>
         <td>{{ p.firstName }} {{ p.lastName }}</td>
         <td>{{ p.isMale ? "M" : "F" }}</td>
