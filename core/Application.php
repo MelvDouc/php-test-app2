@@ -64,9 +64,9 @@ class Application
     }
   }
 
-  public function useRouter(Router $router): Application
+  public function useRouters(Router $router, Router ...$routers): Application
   {
-    $this->routers[] = $router;
+    array_push($this->routers, $router, ...$routers);
     return $this;
   }
 

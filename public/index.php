@@ -31,7 +31,6 @@ $apiRouter = new Router("/api/v1");
 $apiController = new ApiController();
 $apiRouter->get("/profile/:id", [$apiController, "person"]);
 
-$app->useRouter($clientRouter);
-$app->useRouter($apiRouter);
+$app->useRouters($clientRouter, $apiRouter);
 $app->set404Handler([$homeController, "_404"]);
 $app->run();
