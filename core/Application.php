@@ -77,7 +77,7 @@ class Application
           $request = new Request($this, $method, $url, $_GET, $handlersAndParams["params"], $this->getBody($method));
           $response = new Response();
           $handler = $router->getRecursiveHandler($handlersAndParams["handlers"], $request, $response);
-          call_user_func($handler);
+          $handler();
           return;
         }
       }

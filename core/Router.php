@@ -71,13 +71,12 @@ class Router
 
   public function getRecursiveHandler(array $handlers, Request $req, Response $res)
   {
-    $length = count($handlers);
     $handler = null;
 
-    for ($i = $length - 1; $i >= 0; $i--) {
-      $prevHandler = $handler;
-      $handler = function () use ($handlers, $prevHandler, $i, $req, $res) {
-        call_user_func_array($handlers[$i], [$req, $res, $prevHandler]);
+    for ($i = count($handlers) - 1; $i >= 0; $i--) {
+      $prevFn = $handler;
+      $handler = function () use ($handlers, $prevFn, $i, $req, $res) {
+        call_user_func_array($handlers[$i], [$req, $res, $prevFn]);
       };
     }
 
