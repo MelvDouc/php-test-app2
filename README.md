@@ -1,3 +1,3 @@
 # PHP Test App 2
 
-Testing new PHP features. Creating a Express-like app.
+See `public/index.php` for a sample app.
