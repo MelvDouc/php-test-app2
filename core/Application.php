@@ -71,13 +71,13 @@ class Application
       $url = $_SERVER["REQUEST_URI"];
 
       foreach ($this->routers as $router) {
-        $handler = $router->findHandler($method, $url);
+        $handlersAndParams = $router->findHandlers($method, $url);
 
-        if ($handler) {
-          call_user_func_array($handler["fn"], [
-            new Request($this, $method, $url, $_GET, $handler["params"] ?? null, $this->getBody($method)),
-            new Response()
-          ]);
+        if ($handlersAndParams) {
+          $request = new Request($this, $method, $url, $_GET, $handlersAndParams["params"], $this->getBody($method));
+          $response = new Response();
+          $handler = $router->getRecursiveHandler($handlersAndParams["handlers"], $request, $response);
+          call_user_func($handler);
           return;
         }
       }

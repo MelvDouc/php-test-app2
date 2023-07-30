@@ -23,57 +23,75 @@ class Router
 
   /**
    * @param string $path
-   * @param callable(Request $req, Response $res): mixed $handler
+   * @param callable(Request $req, Response $res, ?callable $next): mixed $handler
    */
-  public function get(string $path, callable $handler): Router
+  public function get(string $path, callable $handler, callable ...$handlers): Router
   {
-    return $this->registerHandler("GET", $path, $handler);
+    return $this->addHandlers("GET", $path, $handler, ...$handlers);
   }
 
-  public function post(string $path, callable $handler): Router
+  public function post(string $path, callable $handler, callable ...$handlers): Router
   {
-    return $this->registerHandler("POST", $path, $handler);
+    return $this->addHandlers("POST", $path, $handler, ...$handlers);
   }
 
-  public function put(string $path, callable $handler): Router
+  public function put(string $path, callable $handler, callable ...$handlers): Router
   {
-    return $this->registerHandler("PUT", $path, $handler);
+    return $this->addHandlers("PUT", $path, $handler, ...$handlers);
   }
 
-  public function patch(string $path, callable $handler): Router
+  public function patch(string $path, callable $handler, callable ...$handlers): Router
   {
-    return $this->registerHandler("PATCH", $path, $handler);
+    return $this->addHandlers("PATCH", $path, $handler, ...$handlers);
   }
 
-  public function delete(string $path, callable $handler): Router
+  public function delete(string $path, callable $handler, callable ...$handlers): Router
   {
-    return $this->registerHandler("DELETE", $path, $handler);
+    return $this->addHandlers("DELETE", $path, $handler, ...$handlers);
   }
 
-  public function findHandler(string $method, string $path): ?array
+  public function findHandlers(string $method, string $path): ?array
   {
-    foreach ($this->routes[$method] as $key => $value) {
-      if ($key === $path)
-        return ["fn" => $value];
+    if (isset($this->routes[$method][$path]))
+      return [
+        "handlers" => $this->routes[$method][$path],
+        "params"   => null
+      ];
 
+    foreach ($this->routes[$method] as $key => $handlers) {
       if (preg_match($key, $path, $params))
         return [
-          "fn"     => $value,
-          "params" => $params
+          "handlers" => $handlers,
+          "params"   => $params
         ];
     }
 
     return null;
   }
 
-  private function registerHandler(string $method, string $path, callable $handler): Router
+  public function getRecursiveHandler(array $handlers, Request $req, Response $res)
+  {
+    $length = count($handlers);
+    $handler = null;
+
+    for ($i = $length - 1; $i >= 0; $i--) {
+      $prevHandler = $handler;
+      $handler = function () use ($handlers, $prevHandler, $i, $req, $res) {
+        call_user_func_array($handlers[$i], [$req, $res, $prevHandler]);
+      };
+    }
+
+    return $handler;
+  }
+
+  private function addHandlers(string $method, string $path, callable $handler, callable ...$handlers): Router
   {
     $key = preg_replace(
       "/:(\w+)/",
       "(?P<$1>\\w+)",
       preg_replace("/\//", "\\/", $this->prefix . $path)
     );
-    $this->routes[$method]["/^$key$/"] = $handler;
+    $this->routes[$method]["/^$key$/"] = [$handler, ...$handlers];
     return $this;
   }
 }
