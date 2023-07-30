@@ -69,7 +69,7 @@ class Router
     return null;
   }
 
-  public function getRecursiveHandler(array $handlers, Request $req, Response $res)
+  public function getRecursiveHandler(array $handlers, Request $req, Response $res): \Closure
   {
     $handler = null;
 

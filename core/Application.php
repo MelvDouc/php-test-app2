@@ -4,6 +4,7 @@ namespace Melv\Test;
 
 use Dotenv\Dotenv;
 use Melv\Test\Exception\PageNotFoundException;
+use Melv\Test\Service\DataSanitizerService;
 use Melv\Test\Service\Interface\DatabaseService;
 
 class Application
@@ -100,9 +101,9 @@ class Application
   protected function getBody(string $method)
   {
     return match ($method) {
-      "POST" => $_POST,
-      "PATCH", "PUT" => json_decode(file_get_contents("php://input")),
-      default => null,
+      "POST" => DataSanitizerService::sanitizeArray($_POST),
+      "PATCH", "PUT" => json_decode(file_get_contents("php://input"), true),
+      default => null
     };
   }
 }
