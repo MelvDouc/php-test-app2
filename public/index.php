@@ -28,7 +28,9 @@ $apiRouter->get("/profile/:id", [$apiController, "person"]);
 
 $clientRouter = new Router();
 $homeController = new HomeController();
-$clientRouter->get("/(home)?", [$homeController, "home"]);
+$clientRouter->get("/(home)?", [$homeController, "home_GET"]);
+$clientRouter->post("/(home)?", [$homeController, "home_POST"]);
+$clientRouter->get("/people", [$homeController, "people"]);
 $clientRouter->get("/about", [$homeController, "about"]);
 $clientRouter->get("/.+", [$homeController, "_404"]);
 

@@ -1,0 +1,34 @@
+{% extends "__base.twig" %}
+
+{% block title %}Home{% endblock %}
+
+{% block main %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Street</th>
+        <th>City</th>
+        <th>Zip Code</th>
+        <th>Country</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in persons %}
+      <tr>
+        <td>
+          <a href="/api/v1/profile/{{ p.id }}">{{ p.id }}</a>
+        </td>
+        <td>{{ p.firstName }} {{ p.lastName }}</td>
+        <td>{{ p.isMale ? "M" : "F" }}</td>
+        <td>{{ p.street }}</td>
+        <td>{{ p.city.name }}</td>
+        <td>{{ p.city.zipCode }}</td>
+        <td>{{ p.city.country }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
