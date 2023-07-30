@@ -26,13 +26,13 @@ $apiRouter = new Router("/api/v1");
 $apiController = new ApiController();
 $apiRouter->get("/profile/:id", [$apiController, "person"]);
 
-$clientRouter = new Router();
 $homeController = new HomeController();
-$clientRouter->get("/(home)?", [$homeController, "home_GET"]);
-$clientRouter->post("/(home)?", [$homeController, "home_POST"]);
-$clientRouter->get("/people", [$homeController, "people"]);
-$clientRouter->get("/about", [$homeController, "about"]);
-$clientRouter->get("/.+", [$homeController, "_404"]);
+$clientRouter = (new Router())
+  ->get("/(home)?", [$homeController, "home_GET"])
+  ->post("/(home)?", [$homeController, "home_POST"])
+  ->get("/people", [$homeController, "people"])
+  ->get("/about", [$homeController, "about"])
+  ->get("/.+", [$homeController, "_404"]);
 
 $app->useRouters($apiRouter, $clientRouter);
 $app->run();

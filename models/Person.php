@@ -2,24 +2,151 @@
 
 namespace Melv\Test\Model;
 
-class Person
+use Melv\Test\Application;
+use Melv\Test\Model;
+
+class Person implements Model
 {
-  public static function map(array $p, array $city): Person
+  public static function getById(int $id): ?static
   {
-    $person = new self();
-    $person->id = $p["id"];
-    $person->firstName = $p["firstName"];
-    $person->lastName = $p["lastName"];
-    $person->street = $p["street"];
-    $person->city = (object) $city;
-    $person->isMale = $p["gender"] === "M";
-    return $person;
+    $statement = Application::$instance
+      ->getDatabase()
+      ->prepare("SELECT * FROM person WHERE id = :id");
+
+    if (!$statement->execute(["id" => $id]) || !($data = $statement->fetch()))
+      return null;
+
+    $person = new static();
+    return $person
+      ->setId($data["id"])
+      ->setFirstName($data["firstName"])
+      ->setLastName($data["lastName"])
+      ->setStreet($data["street"])
+      ->setCity((new City())->setId($data["cityId"]))
+      ->setIsMale($data["gender"] === "M");
   }
 
-  public int $id;
-  public string $firstName;
-  public string $lastName;
-  public string $street;
-  public object $city;
-  public bool $isMale;
+  public static function getAll()
+  {
+    $query = Application::$instance
+      ->getDatabase()
+      ->query("SELECT * FROM person")
+      ->fetchAll();
+
+    return array_map(
+      function ($p) {
+        return (new static())
+          ->setId($p["id"])
+          ->setFirstName($p["firstName"])
+          ->setLastName($p["lastName"])
+          ->setStreet($p["street"])
+          ->setCity((new City())->setId($p["cityId"]))
+          ->setIsMale($p["gender"] === "M");
+      },
+      $query
+    );
+  }
+
+  private int $id;
+  private string $firstName;
+  private string $lastName;
+  private string $street;
+  private City $city;
+  private bool $isMale;
+
+  public function getId(): int
+  {
+    return $this->id;
+  }
+
+  public function setId(int $id): Person
+  {
+    $this->id = $id;
+    return $this;
+  }
+
+  public function getFirstName(): string
+  {
+    return $this->firstName;
+  }
+
+  public function setFirstName(string $firstName): Person
+  {
+    $this->firstName = $firstName;
+    return $this;
+  }
+
+  public function getLastName(): string
+  {
+    return $this->lastName;
+  }
+
+  public function setLastName(string $lastName): Person
+  {
+    $this->lastName = $lastName;
+    return $this;
+  }
+
+  public function getStreet(): string
+  {
+    return $this->street;
+  }
+
+  public function setStreet(string $street): Person
+  {
+    $this->street = $street;
+    return $this;
+  }
+
+  public function getCity(): City
+  {
+    return $this->city;
+  }
+
+  public function setCity(City $city): Person
+  {
+    $this->city = $city;
+    return $this;
+  }
+
+  public function getIsMale(): bool
+  {
+    return $this->isMale;
+  }
+
+  public function setIsMale(bool $isMale): Person
+  {
+    $this->isMale = $isMale;
+    return $this;
+  }
+
+  public function save(): void
+  {
+    $statement = Application::$instance
+      ->getDatabase()
+      ->prepare("INSERT INTO person (firstName, lastName, street, cityId, gender)
+      VALUES (:firstName, :lastName, :street, :cityId, :gender)");
+    $statement->execute([
+      "firstName" => $this->firstName,
+      "lastName"  => $this->lastName,
+      "street"    => $this->street,
+      "cityId"    => $this->city->getId(),
+      "gender"    => $this->isMale ? "M" : "F"
+    ]);
+  }
+
+  public function update()
+  {
+  }
+
+  public function toJson(): array
+  {
+    return [
+      "firstName" => $this->firstName,
+      "lastName"  => $this->lastName,
+      "street"    => $this->street,
+      "city"      => $this->city->toJson(),
+      "isMale"    => $this->isMale
+    ];
+  }
 }
