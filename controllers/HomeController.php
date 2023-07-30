@@ -3,7 +3,6 @@
 namespace Melv\Test\Controller;
 
 use Melv\Test\Controller;
-use Melv\Test\Model\City;
 use Melv\Test\Request;
 use Melv\Test\Response;
 use Melv\Test\Model\Person;
@@ -28,21 +27,28 @@ class HomeController extends Controller
     $res->redirect("/people");
   }
 
+  public function home_PATCH(Request $req, Response $res): void
+  {
+    $person = Person::getById((int) $req->queryParams["id"]);
+
+    if (isset($req->body["firstName"]))
+      $person->setFirstName($req->body["firstName"]);
+    if (isset($req->body["lastName"]))
+      $person->setLastName($req->body["lastName"]);
+    if (isset($req->body["street"]))
+      $person->setStreet($req->body["street"]);
+    if (isset($req->body["cityId"]))
+      $person->getCity()->setId((int) $req->body["cityId"]);
+    if (isset($req->body["isMale"]))
+      $person->setIsMale($req->body["isMale"]);
+
+    $person->update();
+    $res->redirect("/people");
+  }
+
   public function people(Request $req, Response $res): void
   {
-    $personsRaw = Person::getAllRaw();
-    $cities = City::getAll();
-    $persons = array_map(
-      fn ($p) => (new Person())
-        ->setId($p["id"])
-        ->setFirstName($p["firstName"])
-        ->setLastName($p["lastName"])
-        ->setStreet($p["street"])
-        ->setCity($cities[$p["cityId"] - 1])
-        ->setIsMale($p["gender"] === "M"),
-      $personsRaw
-    );
-
+    $persons = Person::getAll();
     $res->render("people.twig", [
       "persons" => $persons
     ]);

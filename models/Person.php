@@ -17,21 +17,33 @@ class Person implements Model
       return null;
 
     $person = new static();
+    $city = City::getById($data["cityId"]);
     return $person
       ->setId($data["id"])
       ->setFirstName($data["firstName"])
       ->setLastName($data["lastName"])
       ->setStreet($data["street"])
-      ->setCity((new City())->setId($data["cityId"]))
+      ->setCity($city)
       ->setIsMale($data["gender"] === "M");
   }
 
-  public static function getAllRaw(): array
+  public static function getAll(): array
   {
-    return Application::$instance
+    $personsInDb = Application::$instance
       ->getDatabase()
       ->query("SELECT * FROM person")
       ->fetchAll();
+    $cities = City::getAll();
+    return array_map(
+      fn ($p) => (new Person())
+        ->setId($p["id"])
+        ->setFirstName($p["firstName"])
+        ->setLastName($p["lastName"])
+        ->setStreet($p["street"])
+        ->setCity($cities[$p["cityId"] - 1])
+        ->setIsMale($p["gender"] === "M"),
+      $personsInDb
+    );
   }
 
   private int $id;
@@ -124,6 +136,22 @@ class Person implements Model
 
   public function update()
   {
+    $statement = Application::$instance
+      ->getDatabase()
+      ->prepare("UPDATE person
+        SET firstName = :firstName,
+          lastName = :lastName,
+          street = :street,
+          cityId = :cityId,
+          gender = :gender
+        WHERE id = :id");
+    $statement->execute([
+      "firstName" => $this->firstName,
+      "lastName"  => $this->lastName,
+      "street"    => $this->street,
+      "cityId"    => $this->city->getId(),
+      "gender"    => $this->isMale ? "M" : "F"
+    ]);
   }
 
   public function toJson(): array
