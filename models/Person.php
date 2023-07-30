@@ -26,25 +26,12 @@ class Person implements Model
       ->setIsMale($data["gender"] === "M");
   }
 
-  public static function getAll()
+  public static function getAllRaw(): array
   {
-    $query = Application::$instance
+    return Application::$instance
       ->getDatabase()
       ->query("SELECT * FROM person")
       ->fetchAll();
-
-    return array_map(
-      function ($p) {
-        return (new static())
-          ->setId($p["id"])
-          ->setFirstName($p["firstName"])
-          ->setLastName($p["lastName"])
-          ->setStreet($p["street"])
-          ->setCity((new City())->setId($p["cityId"]))
-          ->setIsMale($p["gender"] === "M");
-      },
-      $query
-    );
   }
 
   private int $id;

@@ -30,11 +30,18 @@ class HomeController extends Controller
 
   public function people(Request $req, Response $res): void
   {
-    $persons = Person::getAll();
+    $personsRaw = Person::getAllRaw();
     $cities = City::getAll();
-
-    foreach ($persons as $person)
-      $person->setCity($cities[$person->getCity()->getId() - 1]);
+    $persons = array_map(
+      fn ($p) => (new Person())
+        ->setId($p["id"])
+        ->setFirstName($p["firstName"])
+        ->setLastName($p["lastName"])
+        ->setStreet($p["street"])
+        ->setCity($cities[$p["cityId"] - 1])
+        ->setIsMale($p["gender"] === "M"),
+      $personsRaw
+    );
 
     $res->render("people.twig", [
       "persons" => $persons
