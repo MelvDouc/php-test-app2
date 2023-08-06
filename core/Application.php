@@ -19,23 +19,11 @@ class Application
   public readonly string $ROOT_DIR;
   /** @var Router[] $routers */
   protected $routers = [];
-  protected DatabaseService $database;
 
   public function __construct(string $ROOT_DIR)
   {
     static::$instance = $this;
     $this->ROOT_DIR = $ROOT_DIR;
-  }
-
-  public function getDatabase(): mixed
-  {
-    return $this->database;
-  }
-
-  public function setDatabase(DatabaseService $database): Application
-  {
-    $this->database = $database;
-    return $this;
   }
 
   public function getPhpEnv(): ?string

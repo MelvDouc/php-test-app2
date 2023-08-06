@@ -4,13 +4,13 @@ namespace Melv\Test\Model;
 
 use Melv\Test\Application;
 use Melv\Test\Model;
+use Melv\Test\Service\MySqlDatabaseService;
 
 class Person implements Model
 {
   public static function getById(int $id): ?static
   {
-    $statement = Application::$instance
-      ->getDatabase()
+    $statement = MySqlDatabaseService::getInstance()
       ->prepare("SELECT * FROM person WHERE id = :id");
 
     if (!$statement->execute(["id" => $id]) || !($data = $statement->fetch()))
@@ -29,8 +29,7 @@ class Person implements Model
 
   public static function getAll(): array
   {
-    $personsInDb = Application::$instance
-      ->getDatabase()
+    $personsInDb = MySqlDatabaseService::getInstance()
       ->query("SELECT * FROM person")
       ->fetchAll();
     $cities = City::getAll();
@@ -121,10 +120,10 @@ class Person implements Model
 
   public function save(): void
   {
-    $statement = Application::$instance
-      ->getDatabase()
-      ->prepare("INSERT INTO person (firstName, lastName, street, cityId, gender)
-      VALUES (:firstName, :lastName, :street, :cityId, :gender)");
+    $statement = MySqlDatabaseService::getInstance()->prepare(
+      "INSERT INTO person (firstName, lastName, street, cityId, gender)
+      VALUES (:firstName, :lastName, :street, :cityId, :gender)"
+    );
     $statement->execute([
       "firstName" => $this->firstName,
       "lastName"  => $this->lastName,
@@ -136,15 +135,15 @@ class Person implements Model
 
   public function update()
   {
-    $statement = Application::$instance
-      ->getDatabase()
-      ->prepare("UPDATE person
-        SET firstName = :firstName,
-          lastName = :lastName,
-          street = :street,
-          cityId = :cityId,
-          gender = :gender
-        WHERE id = :id");
+    $statement = MySqlDatabaseService::getInstance()->prepare(
+      "UPDATE person
+      SET firstName = :firstName,
+        lastName = :lastName,
+        street = :street,
+        cityId = :cityId,
+        gender = :gender
+      WHERE id = :id"
+    );
     $statement->execute([
       "firstName" => $this->firstName,
       "lastName"  => $this->lastName,

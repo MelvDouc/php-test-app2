@@ -9,15 +9,23 @@ use PDOStatement;
 
 class MySqlDatabaseService implements DatabaseService
 {
+  protected static MySqlDatabaseService $instance;
+
+  public static function getInstance(): MySqlDatabaseService
+  {
+    static::$instance ??= new static();
+    return static::$instance;
+  }
+
   protected readonly PDO $connection;
 
-  public function __construct(string $dsn, string $dbName, string $username, string $password)
+  public function __construct()
   {
     try {
       $this->connection = new PDO(
-        "mysql:host=$dsn;dbname=$dbName;charset=utf8",
-        $username,
-        $password,
+        "mysql:host=$_ENV[DB_DSN];dbname=$_ENV[DB_NAME];charset=utf8",
+        $_ENV["DB_USER"],
+        $_ENV["DB_PASSWORD"],
         [
           PDO::MYSQL_ATTR_SSL_CA => openssl_get_cert_locations()["default_cert_file"],
           PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false

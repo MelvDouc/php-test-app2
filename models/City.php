@@ -2,16 +2,14 @@
 
 namespace Melv\Test\Model;
 
-use Melv\Test\Application;
 use Melv\Test\Model;
+use Melv\Test\Service\MySqlDatabaseService;
 
 final class City implements Model
 {
   public static function getById(int $id): ?static
   {
-    $statement = Application::$instance
-      ->getDatabase()
-      ->prepare("SELECT * FROM city WHERE id = :id");
+    $statement = MySqlDatabaseService::getInstance()->prepare("SELECT * FROM city WHERE id = :id");
 
     if (!$statement->execute(["id" => $id]) || !($data = $statement->fetch()))
       return null;
@@ -25,8 +23,7 @@ final class City implements Model
 
   public static function getAll()
   {
-    $query = Application::$instance
-      ->getDatabase()
+    $query = MySqlDatabaseService::getInstance()
       ->query("SELECT * FROM city ORDER BY id")
       ->fetchAll();
 
@@ -93,9 +90,9 @@ final class City implements Model
 
   public function save(): void
   {
-    $statement = Application::$instance
-      ->getDatabase()
-      ->prepare("INSERT INTO city (name, zipCode, country) VALUES (:name, :zipCode, :country)");
+    $statement = MySqlDatabaseService::getInstance()->prepare(
+      "INSERT INTO city (name, zipCode, country) VALUES (:name, :zipCode, :country)"
+    );
     $statement->execute([
       "name" => $this->name,
       "zipCode" => $this->zipCode,
