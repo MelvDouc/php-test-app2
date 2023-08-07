@@ -3,6 +3,7 @@
 namespace Melv\Test\Controller;
 
 use Melv\Test\Controller;
+use Melv\Test\Model\City;
 use Melv\Test\Request;
 use Melv\Test\Response;
 use Melv\Test\Model\Person;
@@ -11,7 +12,10 @@ class HomeController extends Controller
 {
   public function home_GET(Request $req, Response $res)
   {
-    $res->render("home.twig");
+    $cities = City::getAll();
+    $res->render("home.twig", [
+      "cities" => $cities
+    ]);
   }
 
   public function home_POST(Request $req, Response $res)
