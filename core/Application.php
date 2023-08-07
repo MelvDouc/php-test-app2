@@ -5,7 +5,6 @@ namespace Melv\Test;
 use Dotenv\Dotenv;
 use Melv\Test\Exception\PageNotFoundException;
 use Melv\Test\Service\DataSanitizerService;
-use Melv\Test\Service\Interface\DatabaseService;
 
 class Application
 {
