@@ -11,13 +11,14 @@ class DataSanitizerService
 
   public static function sanitizeArray(array $arr): array
   {
-    $result = [];
-
-    foreach ($arr as $key => $value) {
-      $result[$key] = static::sanitizeString($value);
-    }
-
-    return $result;
+    return array_reduce(
+      array_keys($arr),
+      function ($acc, $key) use ($arr) {
+        $acc[$key] = static::sanitizeString($arr[$key]);
+        return $acc;
+      },
+      []
+    );
   }
 
   public static function sanitizeToInt(string $str): int

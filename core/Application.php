@@ -59,12 +59,12 @@ class Application
       $url = $_SERVER["REQUEST_URI"];
 
       foreach ($this->routers as $router) {
-        $handlersAndParams = $router->findHandlers($method, $url);
+        $handlersAndParams = $this->findHandlers($router, $method, $url);
 
         if ($handlersAndParams) {
           $request = new Request($this, $method, $url, $_GET, $handlersAndParams["params"], $this->getBody($method));
           $response = new Response();
-          $handler = $router->getRecursiveHandler($handlersAndParams["handlers"], $request, $response);
+          $handler = $this->findRecursiveHandler($handlersAndParams["handlers"], $request, $response);
           $handler();
           return;
         }
@@ -92,5 +92,38 @@ class Application
       "PATCH", "PUT" => json_decode(file_get_contents("php://input"), true),
       default => null
     };
+  }
+
+  protected function findHandlers(Router $router, string $method, string $path): ?array
+  {
+    if (isset($router->getRoutes()[$method][$path]))
+      return [
+        "handlers" => $router->getRoutes()[$method][$path],
+        "params"   => null
+      ];
+
+    foreach ($router->getRoutes()[$method] as $key => $handlers) {
+      if (preg_match($key, $path, $params))
+        return [
+          "handlers" => $handlers,
+          "params"   => $params
+        ];
+    }
+
+    return null;
+  }
+
+  protected function findRecursiveHandler(array $handlers, Request $req, Response $res): \Closure
+  {
+    $handler = null;
+
+    for ($i = count($handlers) - 1; $i >= 0; $i--) {
+      $prevFn = $handler;
+      $handler = function () use ($handlers, $prevFn, $i, $req, $res) {
+        call_user_func_array($handlers[$i], [$req, $res, $prevFn]);
+      };
+    }
+
+    return $handler;
   }
 }

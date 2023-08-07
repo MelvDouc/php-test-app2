@@ -4,6 +4,7 @@ namespace Melv\Test;
 
 class Router
 {
+  /** @var list<string, list<string, callable[]>> */
   protected array $routes = [
     "GET" => [],
     "POST" => [],
@@ -19,6 +20,11 @@ class Router
   public function __construct(string $prefix = "")
   {
     $this->prefix = $prefix;
+  }
+
+  public function getRoutes(): array
+  {
+    return $this->routes;
   }
 
   /**
@@ -50,40 +56,7 @@ class Router
     return $this->addHandlers("DELETE", $path, $handler, ...$handlers);
   }
 
-  public function findHandlers(string $method, string $path): ?array
-  {
-    if (isset($this->routes[$method][$path]))
-      return [
-        "handlers" => $this->routes[$method][$path],
-        "params"   => null
-      ];
-
-    foreach ($this->routes[$method] as $key => $handlers) {
-      if (preg_match($key, $path, $params))
-        return [
-          "handlers" => $handlers,
-          "params"   => $params
-        ];
-    }
-
-    return null;
-  }
-
-  public function getRecursiveHandler(array $handlers, Request $req, Response $res): \Closure
-  {
-    $handler = null;
-
-    for ($i = count($handlers) - 1; $i >= 0; $i--) {
-      $prevFn = $handler;
-      $handler = function () use ($handlers, $prevFn, $i, $req, $res) {
-        call_user_func_array($handlers[$i], [$req, $res, $prevFn]);
-      };
-    }
-
-    return $handler;
-  }
-
-  private function addHandlers(string $method, string $path, callable $handler, callable ...$handlers): Router
+  protected function addHandlers(string $method, string $path, callable $handler, callable ...$handlers): Router
   {
     $key = preg_replace(
       "/:(\w+)/",
